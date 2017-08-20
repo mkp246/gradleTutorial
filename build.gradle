@@ -2,6 +2,9 @@ repositories {
     mavenCentral()
 }
 apply plugin: "java"
+configurations {
+    myConfig
+}
 
 dependencies {
     compile "org.apache.commons:commons-lang3:3.6"
@@ -11,10 +14,31 @@ sourceSets {
     main.java.srcDir "src/main/java"
 }
 
-configurations {
-    myConfig
-}
 jar {
     from configurations.myConfig.collect { zipTree it }
     manifest.attributes "Main-Class": "net.manoj.gradleTutorial.Main"
+}
+
+task hello(group: 'greeting', description: 'Greets you') {
+    //configuration phase
+    println 'Hello from configuration phase'
+    ext.greeting = 'hey how\'s work?'
+    //execution phase
+    doLast {
+        println("Hello")
+    }
+    doFirst { println 'Starting hello task' }
+    doFirst { println 'Greeting ' + $greeting }
+}
+
+task runJar(type: Exec, group: 'run jar', description: 'run the jar', dependsOn: jar) {
+    executable 'java'
+    args '-jar', "$jar.archivePath", 'Hello World'
+}
+
+task writeGreeting {
+    outputs.file file('greeting.txt')
+    doLast {
+        file('greeting.txt').text = "hello citizens"
+    }
 }
