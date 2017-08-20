@@ -1,0 +1,20 @@
+repositories {
+    mavenCentral()
+}
+apply plugin: "java"
+
+dependencies {
+    compile "org.apache.commons:commons-lang3:3.6"
+    myConfig "org.apache.commons:commons-lang3:3.6"
+}
+sourceSets {
+    main.java.srcDir "src/main/java"
+}
+
+configurations {
+    myConfig
+}
+jar {
+    from configurations.myConfig.collect { zipTree it }
+    manifest.attributes "Main-Class": "net.manoj.gradleTutorial.Main"
+}
